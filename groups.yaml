@@ -1,0 +1,192 @@
+default_view:
+  view: yes
+  entities:
+    - media_player.spotify
+    - sensor.speedtest_download
+    - sensor.speedtest_ping
+    - sensor.speedtest_upload
+    - sun.sun
+    - script.lights_off_1minute
+    - group.travel_times
+lounge:
+  name: Lounge
+  view: yes
+  entities:
+    #- binary_sensor.wemo_motion
+    - media_player.chromecastaudio_lounge
+    - group.lounge_lighting_dashboard
+    - group.Broadlink_A1
+    - group.Broadlink_RM_Pro
+    - group.lounge_scenes
+    - group.travel_times
+lounge_lighting_dashboard:
+  name: Lounge Lighting
+  view: no
+  entities:
+    - switch.lounge_primary
+    - switch.lounge_secondary
+    - switch.kitchen_lights
+    - script.lights_off_1minute
+    - input_select.lounge_scene
+lounge_lighting:
+  name: Lounge Lighting
+  view: no
+  entities:
+    - switch.lounge_primary
+    - switch.lounge_secondary
+    - switch.kitchen_lights
+study:
+  name: Study
+  view: yes
+  entities:
+    - media_player.chromecastaudio_study
+bedroom:
+  name: Bedroom
+  view: yes
+  entities:
+    - switch.bedroom_heater
+    - media_player.chromecast_bedroom
+    - group.automation_bedroom
+allwemo:
+  name: WeMo Switches
+  view: yes
+  entities:
+    - switch.lounge_primary
+    - switch.lounge_secondary
+    - switch.kitchen_lights
+    - switch.bedroom_heater
+melbourne_weather:
+  name: Melbourne Weather
+  view: no
+  entities:
+    - sensor.bom_melbourne_air_temp_c
+    - sensor.bom_melbourne_feels_like_c
+    - sensor.bom_melbourne_rain_today
+    - sensor.bom_melbourne_relative_humidity
+    - sensor.bom_melbourne_visability_km
+    - sensor.bom_melbourne_weather
+    - sensor.bom_melbourne_wind_direction
+    - sensor.bom_melbourne_wind_gust_kmh
+    - sensor.bom_melbourne_wind_speed_kmh
+bundoora_weather:
+  name: Bundoora Weather
+  view: no
+  entities:
+    - sensor.bom_bundoora_air_temp_c
+    - sensor.bom_bundoora_feels_like_c
+    - sensor.bom_bundoora_rain_today
+    - sensor.bom_bundoora_relative_humidity
+    - sensor.bom_bundoora_visability_km
+    - sensor.bom_bundoora_weather
+    - sensor.bom_bundoora_wind_direction
+    - sensor.bom_bundoora_wind_gust_kmh
+    - sensor.bom_bundoora_wind_speed_kmh
+weather:
+  name: Weather
+  view: yes
+  entities:
+    - group.melbourne_weather
+    - group.bundoora_weather
+    - sun.sun
+automation_variables:
+  name: All Variables
+  view: no
+  entities:
+    - input_boolean.at_home_tonight
+    - input_boolean.away_mode
+    - input_boolean.lounge_motion_mode
+    - input_boolean.lounge_low_light_motion_mode
+    - input_boolean.lounge_off_timer_mode
+    - input_boolean.heater_off_timer_mode
+    - input_boolean.system_initialised
+automation_dashboard:
+  name: Austomation Dashboard
+  view: yes
+  entities:
+    - group.people
+    - script.initialise
+    - group.automation_variables
+    - group.all_automations
+    - group.all_switches
+    - group.all_scripts
+    - group.lounge_scenes
+every_light:
+  name: All Lights
+  view: no
+  entities:
+    - switch.lounge_primary
+    - switch.lounge_secondary
+    - switch.kitchen_lights
+every_light_lounge:
+  name: All lounge Lights
+  view: no
+  entities:
+    - switch.lounge_primary
+    - switch.lounge_secondary
+people:
+  name: All people
+  view: no
+  entities:
+    - group.device_neil
+    - group.device_callum
+    - group.device_fiona
+automation_lounge:
+  name: Automation Controlls
+  view: no 
+  entities:
+    - input_boolean.lounge_motion_mode
+    - input_boolean.lounge_low_light_motion_mode
+    - input_boolean.lounge_off_timer_mode
+automation_bedroom:
+  name: Automation Controlls
+  view: no
+  entities:
+    - input_boolean.heater_off_timer_mode
+    - input_boolean.at_home_tonight
+Broadlink_A1:
+  name: Broadlink A1
+  view: no
+  entities:
+    - sensor.broadlink_sensor_air_quality
+    - sensor.broadlink_sensor_humidity
+    - sensor.broadlink_sensor_light
+    - sensor.broadlink_sensor_noise
+    - sensor.broadlink_sensor_temperature
+Broadlink_RM_Pro:
+  name: Broadlink RM Pro
+  view: no
+  entities:
+  - switch.lg_tv_power
+  - switch.lg_tv_av12
+  - switch.lg_tv_hdmi12
+  - switch.lg_tv_hdmi3
+  - switch.AC_Fan
+device_neil:
+  name: "Neil's Phone"
+  view: no
+  entities:
+    - device_tracker.android6122407a58a84424
+device_callum:
+  name: "Callum"
+  view: no
+  entities:
+    - device_tracker.android27cd624b664d1662
+    - device_tracker.androidbfb40df1748b3b2e
+    - device_tracker.androidcc8bee9004c3cec1
+device_fiona:
+  name: "Fiona"
+  view: no
+  entities:
+    - device_tracker.fionasiphone
+device_at_home:
+  name: "At home devices"
+  view: no
+  entities:
+    - group.device_callum
+    - group.device_neil
+travel_times:
+  name: Travel Times
+  view: no
+  entities:
+    - sensor.neil_time_to_work
+    - sensor.callum_time_to_work

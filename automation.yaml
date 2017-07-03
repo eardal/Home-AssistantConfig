@@ -1,0 +1,157 @@
+- alias: Set lounge scene to Night 2 hours before sunset
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: '-02:00:00'
+  action: 
+    service: input_select.select_option
+    data:
+      entity_id: input_select.lounge_scene
+      option: 'Night'
+- alias: Set lounge scene to day 2 hours after sunrise
+  trigger:
+    - platform: sun
+      event: sunrise
+      offset: '02:00:00'
+  action: 
+    service: input_select.select_option
+    data:
+      entity_id: input_select.lounge_scene
+      option: 'Day'
+- alias: Turn on lounge lights when there is movement
+  trigger:
+    platform: state
+    entity_id: binary_sensor.wemo_motion
+    to: 'on'
+  condition:
+    condition: or
+    conditions:
+      - condition: state
+        entity_id: input_boolean.lounge_motion_mode
+        state: 'on'
+      - condition: and
+        conditions:
+          - condition: state 
+            entity_id: input_boolean.lounge_low_light_motion_mode
+            state: 'on'
+          - condition: numeric_state 
+            entity_id: sensor.broadlink_sensor_light
+            below: 2          
+  action:
+    service: homeassistant.turn_on
+    entity_id: group.every_light_lounge
+- alias: Turn off all lounge lights 30 minutes after last movement
+  trigger:
+    platform: state
+    entity_id: binary_sensor.wemo_motion
+    to: 'off'
+    for:
+      minutes: 30
+  condition:
+    condition: state
+    entity_id: input_boolean.lounge_off_timer_mode
+    state: 'on'
+  action:
+    service: homeassistant.turn_off
+    entity_id: group.every_light_lounge
+- alias: Turn off lounge secondary light 15 minutes after last movement
+  trigger:
+    platform: state
+    entity_id: binary_sensor.wemo_motion
+    to: 'off'
+    for:
+      minutes: 15
+  condition:
+    condition: state
+    entity_id: input_boolean.lounge_off_timer_mode
+    state: 'on'
+  action:
+    service: homeassistant.turn_off
+    entity_id: switch.lounge_secondary
+- alias: Set Callum at home  
+  trigger:
+    platform: state
+    entity_id: group.device_callum 
+    to: 'home'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.at_home_tonight
+    - service: script.activate_arrival_mode
+- alias: Set Neil at home  
+  trigger:
+    platform: state
+    entity_id: group.device_callum
+    to: 'home'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.at_home_tonight
+    - service: script.activate_arrival_mode
+- alias: 5pm reset of Neil and Callum at home flag
+  trigger:
+    platform: time
+    after: '17:00'
+  action:
+    service: script.initialise_at_home
+- alias: 'Run initialise script on HA Start'
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+    service: script.initialise
+- alias: Turn on heater at 5:30 if either Neil or Callum are home
+  trigger:
+    platform: time
+    after: '5:30'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: input_boolean.at_home_tonight
+        state: 'on'
+      - condition: numeric_state
+        entity_id: sensor.bom_melbourne_air_temp_c
+        below: 15          
+  action:
+    service: script.heater_on
+- alias: Flic - Action for 1 click
+  trigger:
+    platform: state
+    entity_id: input_boolean.flic_1
+    to: 'on'
+  action:
+    service: script.action_flic_1
+- alias: Flic - Action for 2 clicks
+  trigger:
+    platform: state
+    entity_id: input_boolean.flic_2
+    to: 'on'
+  action:
+    service: script.action_flic_2
+- alias: Flic - Action for press and hold
+  trigger:
+    platform: state
+    entity_id: input_boolean.flic_3
+    to: 'on'
+  action:
+    service: script.action_flic_3
+- alias: Lounge scene change
+  trigger:
+    platform: state
+    entity_id: input_select.lounge_scene
+  action:
+    - service: script.turn_on
+      data_template:
+        entity_id: >
+          {% if trigger.to_state.state == 'Day' %}    
+            script.lounge_scene_activate_day
+          {%-elif trigger.to_state.state == 'Night' %}    
+            script.lounge_scene_activate_night
+          {%-elif trigger.to_state.state == 'Movie' %}    
+            script.lounge_scene_activate_movie
+          {%-elif trigger.to_state.state == 'Lights On' %}    
+            script.lounge_scene_activate_on
+          {%-elif trigger.to_state.state == 'Lights Off' %}    
+            script.lounge_scene_activate_off
+          {% else %}
+            none
+          {% endif %}

@@ -1,0 +1,12 @@
+  - name: day
+    entities:
+      - input_boolean.lounge_motion_mode: off
+      - input_boolean.lounge_low_light_motion_mode: on
+  - name: night
+    entities:
+      - input_boolean.lounge_motion_mode: on
+      - input_boolean.lounge_low_light_motion_mode: off 
+  - name: movie
+    entities:
+      - input_boolean.lounge_motion_mode: off
+      - input_boolean.lounge_low_light_motion_mode: off

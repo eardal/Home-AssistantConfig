@@ -1,0 +1,94 @@
+- platform: bom
+  station: IDV60901.95873
+  name: Bundoora
+  monitored_conditions:
+    - apparent_t
+    - cloud
+    - cloud_base_m
+    - cloud_oktas
+    - cloud_type_id
+    - cloud_type
+    - delta_t
+    - gust_kmh
+    - gust_kt
+    - air_temp
+    - dewpt
+    - press
+    - press_qnh
+    - press_msl
+    - press_tend
+    - rain_trace
+    - rel_hum
+    - sea_state
+    - swell_dir_worded
+    - swell_height
+    - swell_period
+    - vis_km
+    - weather
+    - wind_dir
+    - wind_spd_kmh
+    - wind_spd_kt
+- platform: bom
+  station: IDV60901.95936
+  name: Melbourne
+  monitored_conditions:
+    - apparent_t
+    - cloud
+    - cloud_base_m
+    - cloud_oktas
+    - cloud_type_id
+    - cloud_type
+    - delta_t
+    - gust_kmh
+    - gust_kt
+    - air_temp
+    - dewpt
+    - press
+    - press_qnh
+    - press_msl
+    - press_tend
+    - rain_trace
+    - rel_hum
+    - sea_state
+    - swell_dir_worded
+    - swell_height
+    - swell_period
+    - vis_km
+    - weather
+    - wind_dir
+    - wind_spd_kmh
+    - wind_spd_kt
+- platform: speedtest
+  minute:
+    - 0
+    - 30
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+- platform: temper
+  friendly_name: Study Temperature
+- platform: broadlink
+  update_interval: 60
+  host: 192.168.1.147
+  mac: "B4:43:0D:EF:14:A0"
+  monitored_conditions:
+    - temperature
+    - humidity
+    - air_quality
+    - light
+    - noise
+- platform: google_travel_time
+  api_key: AIzaSyDw3dJsr1q7Fhzep6w9mdI-juMZu0orBrU
+  name: Neil Time to work
+  origin: 7 Yann St, Preston, Victoria, Australia
+  destination: 626 collins street, docklands, victoria, australia
+  options:
+    mode: transit
+- platform: google_travel_time
+  api_key: AIzaSyDw3dJsr1q7Fhzep6w9mdI-juMZu0orBrU
+  name: Callum Time to work
+  origin: 7 Yann St, Preston, Victoria, Australia
+  destination: 720 burke street, docklands, victoria, australia
+  options:
+    mode: transit

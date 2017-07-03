@@ -1,0 +1,256 @@
+lights_off_1minute:
+  alias: Turn Off Lights in 1 minute
+  sequence:
+    - delay:
+        minutes: 1
+    - alias: all lights off
+      service: homeassistant.turn_off
+      entity_id: group.every_light
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_lounge_scene
+heater_on:
+  alias: "Turn heater on with 2 hour timer"
+  sequence:
+    # Cancel any old timers 
+    - service: script.turn_off
+      data: 
+         entity_id: script.heater_timer_off
+    # turn on heater 
+    - service: homeassistant.turn_on
+      data:
+        entity_id: switch.bedroom_heater
+    # Set new timer 
+    - service: script.turn_on
+      data:
+        entity_id: script.heater_timer_off
+heater_timer_off:
+  alias: "Turn off heater after 120"
+  sequence:
+    - condition: state
+      entity_id: input_boolean.heater_off_timer_mode
+      state: 'on'
+    - delay:
+        minutes: 120
+    - service: homeassistant.turn_off
+      data:
+        entity_id: switch.bedroom_heater
+initialise:
+  alias: "Initialise system"
+  sequence:
+    #start heating off timer
+    - service: script.turn_on
+      data:
+        entity_id: script.heater_timer_off
+    - service: homeassistant.turn_on
+      data:
+        entity_id: input_boolean.heater_off_timer_mode
+    #set lounge motion state
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_lounge_scene
+    # check who is home 
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_at_home
+    #send a notification
+    - service: homeassistant.turn_on
+      data:
+        entity_id: input_boolean.system_initialised
+    - service: notify.slack
+      data:
+        message: "HA has started"
+initialise_at_home:
+  alias: Initialise at home
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.at_home_tonight
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_at_home_set_state
+initialise_at_home_set_state:
+  alias: Initialise at home variable part 1
+  sequence:
+    - condition: state
+      entity_id: group.device_at_home
+      state: 'home'
+    - service: homeassistant.turn_on
+      data:
+        entity_id: input_boolean.at_home_tonight
+initialise_lounge_scene:
+  alias: Initialise lounge scene
+  sequence:
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_lounge_scene_1
+    - service: script.turn_on
+      data:
+        entity_id: script.initialise_lounge_scene_2
+initialise_lounge_scene_1:
+  alias: Set lounge scene to day
+  sequence:
+    - condition: sun
+      after: sunrise
+      after_offset: "02:00:00"
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.lounge_scene
+        option: 'Day'
+initialise_lounge_scene_2:
+  alias: Set lounge scene to night
+  sequence:
+    - condition: sun
+      after: sunset
+      after_offset: "-02:00:00"
+    - service: input_select.select_option
+      data:
+        entity_id: input_select.lounge_scene
+        option: 'Night'
+show_advanced_automation:
+  alias: Show Advanced automation
+  sequence:    
+    - service: group.set_visibility
+      data_template:
+        entity_id: group.all_automations
+        hidden: false
+    - service: group.set_visibility
+      data_template:
+        entity_id: group.all_scripts
+        hidden: false
+    - service: group.set_visibility
+      data_template:
+        entity_id: group.all_switches
+        hidden: false
+action_flic_1:
+  alias: Perform action for flic 1
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.flic_1
+    - service: homeassistant.toggle
+      data:
+        entity_id: switch.kitchen_lights    
+action_flic_2:
+  alias: Perform action for flic 2
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.flic_2
+    - service: input_select.select_option
+      data:
+        entity_id: lounge_scene
+        option: 'Movie'
+action_flic_3:
+  alias: Perform action for flic 3
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.flic_3
+    - service: script.turn_on
+      data:
+        entity_id:     
+    - service: script.turn_on
+      data:
+        entity_id: script.lights_off_1minute
+activate_arrival_mode:
+  alias: Activiate home arrival mode
+  sequence:
+    - condition: state
+      entity_id: input_boolean.lounge_motion_mode
+      state: 'on'
+    - service: homeassistant.turn_on
+      data:
+        entity_id: switch.lounge_secondary
+    - service: script.turn_on
+      data:
+        entity_id: script.deactivate_arrival_mode
+deactivate_arrival_mode:
+  alias: Deactiviate home arrival mode
+  sequence:
+    - delay:
+        minutes: 15
+    - service: homeassistant.turn_off
+      data:
+        entity_id: switch.lounge_secondary
+lounge_scene_activate_day:
+  alias: Lounge Scene Day
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_motion_mode
+    - service: homeassistant.turn_on
+      data:
+        entity_id: input_boolean.lounge_low_light_motion_mode
+    - service: homeassistant.turn_on
+      data:
+        entity_id: lounge_off_timer_mode
+lounge_scene_activate_night:
+  alias: Lounge Scene Night
+  sequence:
+    - service: homeassistant.turn_on
+      data:
+        entity_id: input_boolean.lounge_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_low_light_motion_mode
+    - service: homeassistant.turn_on
+      data:
+        entity_id: lounge_off_timer_mode
+lounge_scene_activate_movie:
+  alias: Lounge Scene Movie
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_low_light_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: 
+    - service: homeassistant.turn_off
+      data:
+        entity_id: lounge_off_timer_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: group.every_light
+    - service: homeassistant.turn_on
+      data:
+        entity_id: switch.lounge_secondary
+lounge_scene_activate_on:
+  alias: Lounge Scene Movie
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_low_light_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: 
+    - service: homeassistant.turn_off
+      data:
+        entity_id: lounge_off_timer_mode
+    - service: homeassistant.turn_on
+      data:
+        entity_id: group.every_light
+lounge_scene_activate_off:
+  alias: Lounge Scene Movie
+  sequence:
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: input_boolean.lounge_low_light_motion_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: 
+    - service: homeassistant.turn_off
+      data:
+        entity_id: lounge_off_timer_mode
+    - service: homeassistant.turn_off
+      data:
+        entity_id: group.every_light
