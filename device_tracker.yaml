@@ -6,7 +6,3 @@
   consider_home: 180
   track_new_devices: yes
 - platform: bluetooth_tracker
- >>media_player.yaml
-- platform: spotify
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
